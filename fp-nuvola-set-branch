@@ -1,0 +1,8 @@
+#!/bin/bash
+BRANCH=$1
+
+#for i in $(flatpak list --app --show-details | grep "eu.tiliado.Nuvola" | grep "x86_64/$BRANCH" | cut -d " " -f 1); do
+for i in $(flatpak list --app --columns=application,branch | grep "eu.tiliado.Nuvola" | grep "$BRANCH"  | cut -f 1); do
+	echo $i "$BRANCH"
+ 	flatpak make-current "$i" "$BRANCH"
+done

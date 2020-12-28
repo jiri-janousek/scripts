@@ -1,0 +1,128 @@
+#!/bin/bash -eu
+
+# I usually run scripts in the European Union compliance mode (-eu).
+# All errors and usage of undefined variables terminate the script.
+#
+# Author: Jiří Janoušek <janousek.jiri@gmail.com>
+#
+# To the extent possible under law, author has waived all
+# copyright and related or neighboring rights to this script.
+# http://creativecommons.org/publicdomain/zero/1.0/
+#
+# This script is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty
+# of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+# Default values
+CONFIG_FILE="$HOME/.config/mymlocate.conf.sh"
+DBPATH="$HOME/.cache/mymlocate.db"
+DBROOT="$HOME"
+PRUNEFS=""
+PRUNENAMES=".cache .Cache"
+PRUNEPATHS="$HOME/.local/share/Trash"
+EXTRA_ARGS=""
+IONICE_CLASS="3"
+IONICE_LEVEL="7"
+
+# Usage, a bit detailed
+usage()
+{
+  [ $# = 1 ] || echo $2 && echo
+
+  echo "myupdatedb: wrapper around updatedb to scan user's data only
+
+Usage
+
+  myupdatedb -h|--help
+
+    - show usage
+
+  myupdatedb [-c|--config CONFIG_FILE] [UPDATEDB_ARGS]
+
+    - reads configuration in CONFIG_FILE  runs updatedb with optional
+m       extra arguments. The default configuration file is
+       '~/.config/mymlocate.conf.sh'.
+
+Configuration file:
+
+  The configuration file is sourced by a shell script, i.e. you can
+  use your shell kung-fu. Recognized variables:
+
+  - updatedb parameters, see man updatedb(8) and  updatedb.conf(5)
+    
+    DBPATH='$DBPATH'
+    DBROOT='$DBROOT'
+    PRUNEFS='$PRUNEFS'
+    PRUNENAMES='$PRUNENAMES'
+    PRUNEPATHS='$PRUNEPATHS'
+  
+  - extra arguments passed to updatedb, see man updatedb(8)
+	
+    EXTRA_ARGS=''
+
+  - ionice parameters, see man ionice(1)
+
+    IONICE_CLASS='$IONICE_CLASS'
+    IONICE_LEVEL='$IONICE_LEVEL'
+
+Examples:
+
+  myupdatedb -v
+
+    - run updatedb verbose
+
+  myupdatedb --debug-pruning
+
+    - debug pruning
+
+  myupdatedb --config ~/test.conf --debug-pruning
+
+    - test configuration in ~/test.conf
+
+Use the database with mlocate:
+
+  mlocate -d DBPATH [ARGS]
+
+    - run mlocate with database at DBPATH, see man mlocate
+
+  alias mylocate="mlocate -d DBPATH"
+
+    - you can add this to your Bash aliases
+"
+  exit $1
+}
+
+# Parse recognized argument, others are passed to updatedb
+if [ $# -ge 1 ]; then
+  case $1 in
+  -h|--help)
+	usage 0
+	;;
+  -c|--config)
+	shift
+	[ $# -ge 1 ] || usage 1 "Error: Missing path for config file."
+	[ -f "$1" ] || usage 1 "Error: $1 is not a file."
+	CONFIG_FILE="$1"
+	shift
+	;;
+  esac
+fi
+
+# Override default values by a config file
+! [ -f "$CONFIG_FILE" ] || . "$CONFIG_FILE"
+
+# Check whether we have ionice
+IONICE="ionice -c$IONICE_CLASS"
+[ $IONICE_CLASS = 3 ] || IONICE="$IONICE -n$IONICE_LEVEL"
+$IONICE true 2>/dev/null || IONICE=""
+
+# Run updatedb
+$IONICE updatedb -l 0 \
+--database-root="$DBROOT" \
+--output="$DBPATH" \
+--add-prunefs="$PRUNEFS" \
+--add-prunepaths="$PRUNEPATHS" \
+--add-prunenames="$PRUNENAMES" \
+$EXTRA_ARGS "$@"
+
+

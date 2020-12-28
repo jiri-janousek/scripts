@@ -1,0 +1,14 @@
+#!/bin/bash
+case "$1" in
+on)
+    gsettings set org.gnome.desktop.peripherals.touchpad send-events enabled
+    ;;
+off)
+    gsettings set org.gnome.desktop.peripherals.touchpad send-events disabled
+    ;;
+*)
+    echo -e "Usage: $0 on|off\n"
+    echo -n "org.gnome.desktop.peripherals.touchpad send-events: "
+    gsettings get org.gnome.desktop.peripherals.touchpad send-events
+    ;;
+esac

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+devpi-server --serverdir /home/fenryxo/dev/devpi-server "$@"

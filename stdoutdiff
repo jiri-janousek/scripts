@@ -1,0 +1,21 @@
+#!/bin/bash
+set -eu
+
+name="$1"
+shift
+
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/stdoutdiff"
+mkdir -p "${cache_dir}"
+current_output="${cache_dir}/${name}.txt"
+test -f "${current_output}" || touch "${current_output}"
+new_output="${cache_dir}/${name}.new"
+cat > "${new_output}"
+
+if colordiff -u "$@" "${current_output}" "${new_output}"
+then
+    rm "${new_output}"
+    exit 0
+else
+    mv "${new_output}" "${current_output}"
+    exit 2
+fi

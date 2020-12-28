@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -eu
+
+IONICE="ionice -n0 -p"
+
+for i in `pidof "$1"`; do
+  echo $IONICE $i
+  $IONICE $i
+done

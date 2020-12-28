@@ -1,0 +1,58 @@
+#!/usr/bin/python3
+
+# Author: Jiří Janoušek <janousek.jiri@gmail.com>
+#
+# To the extent possible under law, author has waived all
+# copyright and related or neighboring rights to this script.
+# http://creativecommons.org/publicdomain/zero/1.0/
+#
+# This script is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty
+# of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+"""
+This script exports local mail box (/var/spool/mail/)
+of the current user to plain text files in ~/mail.
+"""
+
+import getpass
+import mailbox
+import shutil
+import os
+import errno
+import time
+
+
+MBOX_PATH = "/var/spool/mail/%s"
+MAIL_STORAGE = "~/mail"
+MBOX_ARCHIVE = "archive"
+
+datetime = time.strftime("%Y-%m-%d_%H:%M:%S")
+mail_storage = os.path.expanduser(MAIL_STORAGE)
+mbox_archive = os.path.join(mail_storage, MBOX_ARCHIVE)
+tmp_mbox = os.path.join(mbox_archive, "%s.mbox" % datetime)
+mbox_path = MBOX_PATH % getpass.getuser()
+
+# Create necessary directories
+try:
+	os.makedirs(mbox_archive)
+except OSError as e:
+	if e.errno != errno.EEXIST:
+		raise e
+
+# Copy and truncate local user's mailbox file
+shutil.copy2(mbox_path, tmp_mbox)
+with open(mbox_path, "w"):
+	pass # file trucated
+
+# export messages
+mbox = mailbox.mbox(tmp_mbox, create=False)
+for key, msg in mbox.iteritems():
+	filename = "%s_%03d.new.txt" % (datetime, key)
+	with open(os.path.join(mail_storage, filename), "w") as f:
+		# write headers
+		for key, value in msg.items():
+			f.write("%s: %s\n" % (key, value))
+		f.write("\nBody:\n")
+		# write decoded body
+		f.write(msg.get_payload(decode=True).decode("utf-8"))

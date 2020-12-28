@@ -1,0 +1,57 @@
+#!/bin/sh -eu
+
+# I usually run scripts in the European Union compliance mode (-eu).
+# All errors and usage of undefined variables terminate the script.
+#
+# Author: Jiří Janoušek <janousek.jiri@gmail.com>
+#
+# To the extent possible under law, author has waived all
+# copyright and related or neighboring rights to this script.
+# http://creativecommons.org/publicdomain/zero/1.0/
+#
+# This script is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty
+# of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+usage()
+{
+
+  [ $# = 1 ] || echo "$2" && echo
+
+   echo "cmddiff: show diff of a command output and a cached output
+
+Usage:
+
+  cmddiff CACHE_FILE COMMAND [ARGS]
+
+  If CACHE_FILE starts with \"~~\" the cached output will be stored
+  in a directory \$HOME/.cache/cmddiff.
+"
+  exit $1
+}
+
+[ $# -ge 2 ] || usage 1 "Error: Not enough arguments."
+
+case "$1" in
+  "~~"*)
+	CACHED_OUTPUT="$HOME/.cache/cmddiff/${1#~~}"
+	;;
+  *)
+	CACHED_OUTPUT="$1"
+	;;
+esac
+
+shift
+
+if ! [ -e "$CACHED_OUTPUT" ]; then
+  mkdir -p "$(dirname "$CACHED_OUTPUT")"
+  touch "$CACHED_OUTPUT"
+fi
+
+NEW_OUTPUT="$(mktemp "$CACHED_OUTPUT.XXXXXXXX")"
+
+"$@" > "$NEW_OUTPUT" 2>&1 || true
+diff -U 5 "$CACHED_OUTPUT" "$NEW_OUTPUT" || true
+mv -f "$NEW_OUTPUT" "$CACHED_OUTPUT"
+

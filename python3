@@ -1,0 +1,26 @@
+#!/bin/bash
+set -eu
+
+ROOT_DIR="$PWD"
+
+SYSTEM_PYTHON="/usr/bin/python3"
+PYTHON3="$SYSTEM_PYTHON"
+
+while [ "$ROOT_DIR" != "/" ]; do
+    if [ -f .virtualenv-name ]
+    then
+        export VENV="$HOME/.virtualenvs/$(cat .virtualenv-name)"
+        PYTHON3="$VENV/bin/python3"
+        if [ ! -f "$PYTHON3" ]
+        then
+            mkdir -p "$HOME/.virtualenvs"
+            "$SYSTEM_PYTHON" -m venv "$VENV"
+            test ! -f requirements.txt || "$PYTHON3" -m pip install -r requirements.txt
+        fi
+        break
+    fi
+    ROOT_DIR="`dirname "$ROOT_DIR"`"
+done
+
+export PYTHON3
+exec "$PYTHON3" "$@"

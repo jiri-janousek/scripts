@@ -1,0 +1,4 @@
+#!/bin/sh
+
+renice -n19 "$@"
+ionice -c3 "$@"

@@ -1,0 +1,78 @@
+#!/bin/bash -eu
+
+# I usually run scripts in the European Union compliance mode (-eu).
+# All errors and usage of undefined variables terminate the script.
+#
+# Author: Jiří Janoušek <janousek.jiri@gmail.com>
+#
+# To the extent possible under law, author has waived all
+# copyright and related or neighboring rights to this script.
+# http://creativecommons.org/publicdomain/zero/1.0/
+#
+# This script is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty
+# of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+# This script is used to read local mail exported with mbox-export
+
+# export email
+${0%-read}
+
+# go to the mail storage
+cd ~/mail
+
+# blacklist patterns for grep
+blacklist="
+To: survey@popcon.debian.org
+/etc/cron.daily/etckeeper:
+"
+
+do_action()
+{
+  read -p "[R]ead [C]ontinue [D]elete [A]rchive [Q]uit " -n 1
+  echo
+  case "$REPLY" in
+  r|R)
+    less "$mail"
+    do_action
+    ;;
+  d|D)
+    rm -fv "$mail"
+    ;;
+  a|A)
+    archived="$(echo $mail | sed 's/\.new\.txt$/\.old\.txt/')"
+    mv -v "$mail" "$archived"
+    ;;
+  q|Q)
+    exit 0
+    ;;
+  esac
+}
+
+filter()
+{
+  IFS="
+"
+  for str in $blacklist; do
+    [ -z "$str" ] || grep "$str" "$mail" >/dev/null && return 1
+  done
+  return 0
+}
+
+
+for mail in *.new.txt; do
+  if [ "$mail" == "*.new.txt" ]; then
+    echo "No email found."
+    exit 0
+  fi
+
+  echo $mail
+  grep "Subject" "$mail"
+  if ! filter; then
+     rm -vf "$mail"
+  else
+    do_action
+  fi
+  echo
+  echo
+done

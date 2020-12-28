@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eux
+yamllint .
+ansible-lint -v playbooks/*.yml
+exec ansible-playbook "$@"

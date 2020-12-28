@@ -1,0 +1,3 @@
+#!/bin/sh
+export EDITOR="gedit -s"
+exec ansible-vault "$@"

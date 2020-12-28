@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -eu
+
+tag()
+{
+    TAG="$1/CACHEDIR.TAG"
+    if [ -f "$TAG" ]; then
+        #rm "$TAG"
+        echo "= $TAG"
+    else
+        echo 'Signature: 8a477f597d28d172789f06886806bc55' > "$TAG"
+        echo "+ $TAG"
+    fi
+}
+
+if [ $# = 0 ]; then
+    tag .
+else
+    for DIR in "$@"; do
+        tag "$DIR"
+    done
+fi

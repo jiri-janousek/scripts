@@ -1,0 +1,6 @@
+#!/bin/bash
+text=$2
+[ "$2" == "" ] && text="Alarm!"
+sleep $(($1 * 60))
+zenity --question --text="$text"
+[ "$?" == "0" ] && $0 "$1" "$text"

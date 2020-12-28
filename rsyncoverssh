@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+if [ $# -lt 4 ]; then
+	echo "Usage: $0 host user local_dir remote_dir [args].."
+	exit 1
+fi
+
+HOST="$1"
+shift
+USER="$1"
+shift
+LOCALDIR="$1"
+shift
+REMOTEDIR="$1"
+shift
+
+set -x
+exec rsync --rsh="ssh -l $USER" \
+--delete \
+--verbose \
+--archive \
+--compress \
+--prune-empty-dirs \
+--progress \
+"$@" \
+"$LOCALDIR" "${HOST}:${REMOTEDIR}"
