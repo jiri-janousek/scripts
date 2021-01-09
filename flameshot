@@ -1,0 +1,4 @@
+#!/bin/sh
+# https://github.com/flameshot-org/flameshot/issues/1184
+export QT_QPA_PLATFORM=xcb
+exec /usr/bin/flameshot "$@"
