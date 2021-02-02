@@ -1,0 +1,38 @@
+#!/bin/bash
+set -eu
+
+DIR="$PWD"
+
+while true
+do
+    cd "$DIR"
+    set +e
+    "$@"
+    code=$?
+    set -e
+
+    if [ "$code" != "0" ];
+    then
+        echo
+        echo "💥 The command exited with a non-zero code ($code)! 💥"
+        echo '💻 Launching a subshell for you to fix it. Then press ^D (or "exit 0") to repeat command,'
+        echo '💻 "exit 1" to abort with the original exit code or "exit 9" to quit with zero exit code.'
+        
+        set +e
+        bash -i
+        bash_code=$?
+        set -e
+        
+        case "$bash_code" in
+        0)
+            ;;
+        9)
+            exit 0
+            ;;
+        *)
+            exit "$code"
+        esac
+    else
+        break
+    fi
+done
