@@ -1,0 +1,19 @@
+#!/bin/bash
+set -eu
+root="$PWD"
+
+for group in *; do
+    
+    test -d "$root/$group" || continue
+    cd "$root/$group"
+    if [ -d .git ] 
+    then
+        echo -e "📂 Updating repository $group...\n"
+        try_repeat syncgit
+        echo -e "\n"
+    else
+        echo -e "📂 Updating group $group...\n"
+        exec_in_subdirs syncgit
+        echo -e "\n"
+    fi
+done
