@@ -1,0 +1,39 @@
+#!/bin/bash
+set -eu
+ROOT="$PWD"
+for NAME in *; do
+    cd "$ROOT"
+    if [ -d "$NAME" ]; then
+        while true
+        do
+            cd "$ROOT/$NAME"
+            echo "📂 $PWD 📂"
+            echo "\$ $@"
+            if ! "$@"; then
+                echo
+                echo "💥 There was an error! 💥"
+                echo '💻 Launching a subshell for you to fix it. Then press ^D (or "exit 0") to repeat command,'
+                echo '💻 "exit 1" to abort with the original exit code or "exit 9" to skip this directory.'
+                
+                set +e
+                bash -i
+                code=$?
+                set -e
+                
+                case "$code" in
+                0)
+                    ;;
+                9)
+                    break
+                    ;;
+                *)
+                    exit "$code"
+                esac
+            else
+                break
+            fi
+        done
+        echo
+    fi
+done
+echo "💪 All done! 💪"
