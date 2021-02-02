@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -eu
+
+if [ ! -d .git ]
+then
+	echo "💥 Directory .git not found, skipping. 💥" >&2
+	exit 0
+fi
+
+{ set +x; } 2>&-
+STATUS=$(git -c color.status=always status --short)
+
+if [ -n "$STATUS" ]
+then
+	echo
+	echo "$STATUS"
+	echo -e "\n💩💩💩 Cannot update master because your git working tree is dirty! 💩💩💩"
+	exit 1
+fi
+
+set -x
+git fetch origin
+git remote prune origin
+git checkout master
+git pull --ff-only
+git status -vv
