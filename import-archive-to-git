@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euo pipefail
+URL="$1"
+DIR="$2"
+ARCHIVE="${URL##*/}"
+
+test -f "$ARCHIVE" || wget "$URL"
+
+if [ -e "$DIR" ]; then
+    echo -n "Overwrite existing directory '$DIR'? [y/N] "
+    read
+    case "${REPLY}" in
+    y|Y|yes)
+        rm -rf "$DIR"
+        ;;
+    *)
+        exit 1
+        ;;
+    esac
+fi
+
+tar -xaf "$ARCHIVE" --one-top-level="$DIR"
+rm "$ARCHIVE"
+cd "$DIR"
+git init .
+git add .
+git commit -m "Import $ARCHIVE
+
+$URL"
+git log
