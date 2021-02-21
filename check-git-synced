@@ -1,0 +1,32 @@
+#!/bin/bash
+set -euo pipefail
+
+BRANCH="$1"
+LOCAL="$2"
+REMOTE="$3"
+
+cd "$LOCAL"
+
+REMOTE_COMMIT="$(git ls-remote -q "$REMOTE" "refs/heads/$BRANCH" | cut -f1)"
+LOCAL_COMMIT="$(git ls-remote -q . "refs/heads/$BRANCH" | cut -f1)"
+LOCAL_HEAD="$(git ls-remote -q . HEAD | cut -f1)"
+STATUS=$(git -c color.status=always status --short)
+
+if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]
+then
+    echo "$BRANCH: Local $LOCAL_COMMIT != remote $REMOTE_COMMIT" >&2
+    exit 1
+fi
+
+if [ "$LOCAL_COMMIT" != "$LOCAL_HEAD" ]
+then
+    echo "Not on local branch $BRANCH." >&2
+    exit 2
+fi
+
+if [ -n "$STATUS" ]
+then
+    echo "Local working directory is dirty." >&2
+    echo "$STATUS"
+    exit 3
+fi
