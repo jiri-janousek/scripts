@@ -1,27 +1,75 @@
 #!/bin/bash
-
 set -eu
+quiet=0
+skip=0
+push=0
+directory=
+
+for param in "$@"
+do
+    case $param in
+    # Avoid verbose output
+    -q|--quiet)
+        quiet=1
+        ;;
+    # Skip if .git is not present
+    -s|--skip)
+        skip=1
+        ;;
+    # Push local changes
+    -p|--push)
+        push=1
+        ;;
+    -*)
+        echo "Unknown parameter '$param'.'" >&2
+        exit 1
+        ;;
+    *)
+        if [ -n "$directory" ]
+        then
+            echo "Directory alreay set to '$directory'." >&2
+            exit 1
+        fi
+        directory="$param"
+    esac
+done
+
+test -n "$directory" || directory=.
+cd "$directory"
 
 if [ ! -d .git ]
 then
-	echo "💥 Directory .git not found, skipping. 💥" >&2
-	exit 0
+    echo "💥 Directory .git not found, aborting. 💥" >&2
+    if [ $skip = 1 ]
+    then
+	    exit 0
+    else
+	    exit 2
+    fi
 fi
 
-{ set +x; } 2>&-
 STATUS=$(git -c color.status=always status --short)
 
 if [ -n "$STATUS" ]
 then
-	echo
-	echo "$STATUS"
-	echo -e "\n💩💩💩 Cannot update master because your git working tree is dirty! 💩💩💩"
-	exit 1
+	[ $quiet = 1 ] || echo -e "$STATUS\n"
+	echo "💩💩💩 Cannot update master because your git working tree is dirty! 💩💩💩" >&2
+	exit 3
 fi
 
-set -x
-git fetch origin
-git remote prune origin
-git checkout master
-git pull --ff-only
-git status -vv
+if [ $quiet = 1 ]
+then
+    git fetch -q origin
+    git remote prune origin
+    git checkout -q master
+    git pull -q --ff-only
+    [ $push = 0 ] || git push -q
+else
+    set -x
+    git fetch origin
+    git remote prune origin
+    git checkout master
+    git pull --ff-only
+    git status -vv
+    [ $push = 0 ] || git push
+fi
