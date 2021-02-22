@@ -9,7 +9,7 @@ cd "$LOCAL"
 
 REMOTE_COMMIT="$(git ls-remote -q "$REMOTE" "refs/heads/$BRANCH" | cut -f1)"
 LOCAL_COMMIT="$(git ls-remote -q . "refs/heads/$BRANCH" | cut -f1)"
-LOCAL_HEAD="$(git ls-remote -q . HEAD | cut -f1)"
+LOCAL_HEAD="$(git ls-remote -q . HEAD | grep '\sHEAD$' | cut -f1)"
 STATUS=$(git -c color.status=always status --short)
 
 if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]
