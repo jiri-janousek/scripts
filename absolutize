@@ -1,0 +1,3 @@
+#!/bin/sh
+# Replace `dirname/filename.ext:lineno: ` with absolute path.
+"$@" 2>&1 | sed "s|^\(\./\)\?\([^/]\+\(/[^/]\+\)*:[0-9]\+:\? \)|$PWD/\2|"
