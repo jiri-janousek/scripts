@@ -13,7 +13,7 @@ for group in *; do
         echo -e "\n"
     else
         echo -e "📂 Updating group $group...\n"
-        exec_in_subdirs syncgit
+        exec_in_subdirs syncgit -s
         echo -e "\n"
     fi
 done
