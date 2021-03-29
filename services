@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ $# -gt 0 ]; then
+    svcs="$@"
+else
+    svcs="
+        docker
+        nginx
+        uwsgi-emperor
+        postgresql
+        postgresql@12-main
+        mysql
+        mysqld
+    "
+fi
+
+size=0
+
+for svc in $svcs; do
+    s=${#svc}
+    size=$((s>size ? s : size))
+done
+
+for svc in $svcs; do
+    printf "%-$((size + 4))s " $svc
+    if ! systemctl cat "${svc}.service" >/dev/null 2>&1; then
+        echo -e "\e[93mnot found\e[0m"
+    elif systemctl is-active --quiet $svc; then
+        echo -e "\e[92m$(systemctl is-active $svc)\e[0m"
+    else
+        echo -e "\e[91m$(systemctl is-active $svc)\e[0m"
+    fi
+done
