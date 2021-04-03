@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eux
+BRANCH="$1"
+git merge --ff-only "$BRANCH"
+git push
+git branch -d "$BRANCH"
+git push origin -d "$BRANCH"
