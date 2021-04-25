@@ -1,0 +1,11 @@
+#!/bin/sh
+exec podman run \
+-it --rm \
+--name airsonic \
+-v $HOME/music/library:/airsonic/music:ro \
+-v as-data:/airsonic/data \
+-v as-playlists:/airsonic/playlists \
+-v as-podcasts:/airsonic/podcasts \
+-p 4040:4040 \
+--security-opt label=disable \
+docker.io/airsonic/airsonic
