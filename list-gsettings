@@ -1,0 +1,25 @@
+#!/usr/bin/bash
+gsettings list-recursively | grep -v \
+-e '^org.gnome.evolution-data-server.calendar reminders-past' \
+-e '^org.gnome.shell.overrides edge-tiling' \
+-e '^org.gnome.Evince.Default window-ratio' \
+-e '^org.gnome.desktop.notifications application-children' \
+-e '^org.gnome.gnome-system-monitor' \
+-e '^org.gtk.Settings.FileChooser' \
+-e '^org.gnome.nautilus.window-state' \
+-e '^org.gnome.gthumb.browser startup' \
+-e '^org.gnome.gitg.state.window ' \
+-e '^org.gnome.gitg.state.history' \
+-e '^org.gnome.ControlCenter last-panel' \
+-e '^org.gnome.Evince.Default window-ratio' \
+-e '^org.gnome.nautilus.preferences default-folder-viewer' \
+-e '^org.gnome.shell app-picker-layout' \
+-e '^org.gnome.gedit.plugins.filebrowser virtual-root' \
+-e '^org.gnome.gedit.state' \
+-e '^org.gnome.shell had-bluetooth-devices-setup' \
+-e '^org.gnome.gthumb.browser maximized' \
+-e '^org.gnome.desktop.peripherals.keyboard numlock-state' \
+-e 'org.gnome.boxes window-size' \
+-e 'org.gnome.calendar window' \
+-e 'org.gnome.SimpleScan save-directory' \
+| sort
