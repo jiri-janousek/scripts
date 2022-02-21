@@ -57,18 +57,20 @@ then
 	exit 3
 fi
 
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | cut -d '/' -f4)
+
 if [ $quiet = 1 ]
 then
     git fetch -q origin
     git remote prune origin
-    git checkout -q master
+    git checkout -q $DEFAULT_BRANCH
     git pull -q --ff-only
     [ $push = 0 ] || git push -q
 else
     set -x
     git fetch origin
     git remote prune origin
-    git checkout master
+    git checkout $DEFAULT_BRANCH
     git pull --ff-only
     git status -vv
     [ $push = 0 ] || git push
