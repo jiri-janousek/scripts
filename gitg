@@ -1,2 +1,3 @@
 #!/bin/sh
+export GTK_THEME=Adwaidta
 exec /usr/bin/gitg --standalone "$@" &
