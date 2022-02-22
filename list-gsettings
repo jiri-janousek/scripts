@@ -24,4 +24,6 @@ gsettings list-recursively | grep -v \
 -e '^org.gnome.SimpleScan save-directory' \
 -e '^org.gnome.DejaDup last-backup' \
 -e '^org.gnome.DejaDup last-run' \
+-e '^org.gnome.software online-updates-timestamp' \
+-e '^org.gnome.software update-notification-timestamp' \
 | sort
