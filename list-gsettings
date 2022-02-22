@@ -19,7 +19,9 @@ gsettings list-recursively | grep -v \
 -e '^org.gnome.shell had-bluetooth-devices-setup' \
 -e '^org.gnome.gthumb.browser maximized' \
 -e '^org.gnome.desktop.peripherals.keyboard numlock-state' \
--e 'org.gnome.boxes window-size' \
--e 'org.gnome.calendar window' \
--e 'org.gnome.SimpleScan save-directory' \
+-e '^org.gnome.boxes window-size' \
+-e '^org.gnome.calendar window' \
+-e '^org.gnome.SimpleScan save-directory' \
+-e '^org.gnome.DejaDup last-backup' \
+-e '^org.gnome.DejaDup last-run' \
 | sort
