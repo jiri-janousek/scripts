@@ -27,4 +27,5 @@ gsettings list-recursively | grep -v \
 -e '^org.gnome.software online-updates-timestamp' \
 -e '^org.gnome.software update-notification-timestamp' \
 -e '^org.gnome.settings-daemon.plugins.color night-light-last-coordinates' \
+-e '^org.gnome.software check-timestamp' \
 | sort
