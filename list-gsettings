@@ -28,4 +28,5 @@ gsettings list-recursively | grep -v \
 -e '^org.gnome.software update-notification-timestamp' \
 -e '^org.gnome.settings-daemon.plugins.color night-light-last-coordinates' \
 -e '^org.gnome.software check-timestamp' \
+-e '^org.gnome.gitg.state.commit paned-sidebar-position' \
 | sort
